@@ -1,0 +1,7 @@
+Flask==1.1.4
+Flask-Migrate==3.1.0
+Flask-SQLAlchemy==2.5.1
+flask_restx
+flask-cors
+gunicorn==20.1.0
+rich
