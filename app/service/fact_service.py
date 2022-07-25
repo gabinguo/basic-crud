@@ -1,5 +1,5 @@
-from sqlalchemy import asc
-from typing import Dict, Any, List
+from sqlalchemy import func
+from typing import Dict, Any, List, Tuple
 import logging
 
 from app import db
@@ -46,9 +46,13 @@ def update_a_fact(fact_id: int, data: Dict[str, Any]) -> bool:
     return True
 
 
-def find_all_facts(limit: int = 100, offset: int = 0) -> List[Fact]:
-    facts = Fact.query.order_by(asc(Fact.id)).limit(limit).offset(offset).all()
-    return facts
+def find_all_facts(page: int, per_page: int = 10) -> Tuple[List[Fact], int]:
+    print(type(page))
+    print(type(per_page))
+    fact_query = Fact.query.paginate(page=page, per_page=per_page, error_out=False)
+    total = fact_query.total
+    facts = fact_query.items
+    return facts, total
 
 
 def find_fact_by_id(fact_id: int) -> Fact:
@@ -57,6 +61,29 @@ def find_fact_by_id(fact_id: int) -> Fact:
         logger.error(f"Cannot find fact with id {fact_id}")
         return None
     return fact
+
+
+def value_counts_source_name():
+    row = db.session.query(Fact.source_name, func.count()).group_by(Fact.source_name).all()
+    value_counts = {item[0]: item[1] for item in row}
+    return [{
+        'type': key,
+        'count': value,
+    } for key, value in value_counts.items()]
+
+
+def value_counts_predicate_id():
+    row = db.session.query(Fact.predicate_id, func.count()).group_by(Fact.predicate_id).all()
+    value_counts = {item[0]: item[1] for item in row}
+    return [{
+        'type': key,
+        'count': value,
+    } for key, value in value_counts.items()]
+
+
+def average_confidence():
+    row = db.session.query(func.avg(Fact.confidence_reader)).first()
+    return row[0]
 
 
 def find_unique_source_names():
