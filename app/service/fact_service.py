@@ -55,5 +55,17 @@ def find_fact_by_id(fact_id: int) -> Fact:
     fact = Fact.query.filter_by(id=fact_id).first()
     if not fact:
         logger.error(f"Cannot find fact with id {fact_id}")
-        return
+        return None
     return fact
+
+
+def find_unique_source_names():
+    row = db.session.query(Fact.source_name).distinct().all()
+    source_names = [item[0] for item in row]
+    return source_names
+
+
+def find_unique_predicate_ids():
+    row = db.session.query(Fact.predicate_id).distinct().all()
+    predicate_ids = [item[0] for item in row]
+    return predicate_ids

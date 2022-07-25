@@ -29,3 +29,10 @@ fact_put_model = api.model("FactPut", {
 })
 
 
+unique_source_names = api.model("UniqueSourceNames", {
+    "source_names": fields.List(fields.String),
+})
+
+unique_predicate_ids = api.model("UniquePredicateIds", {
+    "predicate_ids": fields.List(fields.String),
+})

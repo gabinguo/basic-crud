@@ -1,17 +1,18 @@
 from flask_restx import abort
 
 from flask import request
-from flask_restx import Resource
+from flask_restx import Resource, fields
 from app.controller.configuration.routes import fact_api as api
-from app.controller.payloads.fact_payloads import fact_model, fact_put_model, get_fact_parser, get_facts_parser
-from app.service.fact_service import find_fact_by_id, delete_a_fact, update_a_fact, create_a_fact, find_all_facts
+from app.controller.payloads.fact_payloads import fact_model, fact_put_model, get_fact_parser, get_facts_parser, \
+    unique_predicate_ids, unique_source_names
+from app.service.fact_service import find_fact_by_id, delete_a_fact, update_a_fact, create_a_fact, find_all_facts, \
+    find_unique_predicate_ids, find_unique_source_names
 
 
 @api.route("")
 class FactItem(Resource):
 
     @api.param("fact_id", "The ID of the fact item")
-
     @api.expect(get_fact_parser)
     @api.marshal_with(fact_model)
     def get(self):
@@ -56,3 +57,21 @@ class FactItemList(Resource):
         limit = args["limit"] if "limit" in args else 100
         offset = args["offset"] if "offset" in args else 0
         return find_all_facts(limit, offset)
+
+
+@api.route("/source_names")
+class FactUniqueSourceNames(Resource):
+    @api.marshal_with(unique_source_names)
+    def get(self):
+        return {
+            "source_names": find_unique_source_names()
+        }
+
+
+@api.route("/predicate_ids")
+class FactUniquePredicateIds(Resource):
+    @api.marshal_with(unique_predicate_ids)
+    def get(self):
+        return {
+            "predicate_ids": find_unique_predicate_ids()
+        }
