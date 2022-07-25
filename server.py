@@ -1,6 +1,7 @@
 from flask_migrate import Migrate
 from flask_cors import CORS
 from app.server_config import bp, api
+from app.model.fact import Fact
 from app import create_application, db
 from configs import *
 
