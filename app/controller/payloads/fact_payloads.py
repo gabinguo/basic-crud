@@ -17,6 +17,7 @@ fact_model = api.model("Fact", {
     "object_url": fields.String,
     "object_id": fields.String,
     "source_url": fields.String,
+    "source_name": fields.String,
     "object_label": fields.String,
     "confidence_reader": fields.Float,
     "feedback": fields.Integer,

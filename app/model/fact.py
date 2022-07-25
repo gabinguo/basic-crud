@@ -16,6 +16,7 @@ class Fact(db.Model):
     object_id = db.Column(db.String, nullable=False)
 
     source_url = db.Column(db.String, nullable=False)
+    source_name = db.Column(db.String, nullable=False)
 
     object_label = db.Column(db.String, nullable=False)
     confidence_reader = db.Column(db.Float, nullable=False)
