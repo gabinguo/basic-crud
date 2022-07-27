@@ -46,10 +46,13 @@ def update_a_fact(fact_id: int, data: Dict[str, Any]) -> bool:
     return True
 
 
-def find_all_facts(page: int, per_page: int = 10) -> Tuple[List[Fact], int]:
-    print(type(page))
-    print(type(per_page))
-    fact_query = Fact.query.paginate(page=page, per_page=per_page, error_out=False)
+def find_all_facts(page: int, per_page: int = 10, source_name: str = None, predicate_id: str = None) -> Tuple[List[Fact], int]:
+    filters = {"source_name": source_name, "predicate_id": predicate_id}
+    filters = {k: v for k, v in filters.items() if v is not None}
+    if filters:
+        fact_query = Fact.query.filter_by(**filters).paginate(page, per_page, False)
+    else:
+        fact_query = Fact.query.paginate(page=page, per_page=per_page, error_out=False)
     total = fact_query.total
     facts = fact_query.items
     return facts, total
@@ -86,13 +89,20 @@ def average_confidence():
     return row[0]
 
 
-def find_unique_source_names():
-    row = db.session.query(Fact.source_name).distinct().all()
+def find_unique_source_names(predicate_id: str = None):
+    if predicate_id:
+        row = db.session.query(Fact.source_name, Fact.predicate_id).filter(Fact.predicate_id == predicate_id).distinct().all()
+    else:
+        row = db.session.query(Fact.source_name).distinct().all()
     source_names = [item[0] for item in row]
     return source_names
 
 
-def find_unique_predicate_ids():
-    row = db.session.query(Fact.predicate_id).distinct().all()
+def find_unique_predicate_ids(source_name: str = None):
+    if source_name:
+        row = db.session.query(Fact.predicate_id, Fact.source_name).filter(Fact.source_name == source_name).distinct().all()
+    else:
+        row = db.session.query(Fact.predicate_id).distinct().all()
     predicate_ids = [item[0] for item in row]
     return predicate_ids
+
